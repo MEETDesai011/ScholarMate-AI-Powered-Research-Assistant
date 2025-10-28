@@ -15,10 +15,13 @@ const aiModeSelect = document.getElementById("aiModeSelect");
 const themeRadios = document.querySelectorAll('input[name="theme"]');
 const closeSettingsBtn = document.getElementById("closeSettingsBtn");
 const settingsStatus = document.getElementById("settingsStatus");
+// NEW ELEMENT
+const targetLanguageSelect = document.getElementById("targetLanguageSelect");
 
 const DEFAULT_SETTINGS = {
     theme: 'light',
-    aiMode: 'hybrid' // built-in -> cloud
+    aiMode: 'hybrid', // built-in -> cloud
+    targetLanguage: 'Spanish' // NEW DEFAULT
 };
 
 // --- Settings Persistence & Theme Application ---
@@ -26,7 +29,8 @@ const DEFAULT_SETTINGS = {
 function saveSettings() {
     const newSettings = {
         theme: document.querySelector('input[name="theme"]:checked').value,
-        aiMode: aiModeSelect.value
+        aiMode: aiModeSelect.value,
+        targetLanguage: targetLanguageSelect.value // SAVE NEW SETTING
     };
     chrome.storage.local.set(newSettings, () => {
         settingsStatus.innerText = "Settings saved.";
@@ -42,6 +46,9 @@ function loadSettings() {
 
         // Apply AI Mode
         aiModeSelect.value = settings.aiMode;
+        
+        // Apply Target Language (NEW)
+        targetLanguageSelect.value = settings.targetLanguage;
     });
 }
 
@@ -50,6 +57,7 @@ loadSettings();
 
 // Event listeners for saving settings
 aiModeSelect.addEventListener('change', saveSettings);
+targetLanguageSelect.addEventListener('change', saveSettings); // NEW EVENT LISTENER
 themeRadios.forEach(radio => {
     radio.addEventListener('change', () => {
         saveSettings();
@@ -107,7 +115,9 @@ function sendActionToBackground(action) {
     return;
   }
   outputEl.innerText = "Processing...";
-  chrome.runtime.sendMessage({ action, text }, (response) => {
+  const targetLanguage = targetLanguageSelect.value; // GET THE SELECTED LANGUAGE
+
+  chrome.runtime.sendMessage({ action, text, targetLanguage }, (response) => { // PASS LANGUAGE IN MESSAGE
     if (!response) {
       outputEl.innerText = "No response from background script.";
       return;
