@@ -20,8 +20,8 @@ function getAiMode() {
 }
 
 // Helper to execute built-in chrome.ai functions
-// THIS IS THE MODIFIED FUNCTION
-async function executeBuiltIn(action, text, sendResponse) {
+// MODIFIED TO ACCEPT targetLanguage
+async function executeBuiltIn(action, text, targetLanguage, sendResponse) {
     // Check for the base API, not the specific tasks
     if (!chrome.ai || !chrome.ai.LanguageModel) {
         const help = {
@@ -44,7 +44,8 @@ async function executeBuiltIn(action, text, sendResponse) {
             systemInstruction = "You are an expert research assistant. Summarize the following text briefly and concisely. Focus on the main argument and key findings.";
             break;
           case "translate":
-            systemInstruction = "You are an expert translator. Translate the following text into Spanish. Return only the translated text.";
+            // USE TARGET LANGUAGE IN PROMPT
+            systemInstruction = `You are an expert translator. Translate the following text into ${targetLanguage}. Return only the translated text.`;
             break;
           case "proofread":
             systemInstruction = "You are an expert editor and proofreader. Proofread and correct any grammatical or spelling errors in the following text, and improve clarity and academic tone. Return only the final, corrected text.";
@@ -78,9 +79,10 @@ async function executeBuiltIn(action, text, sendResponse) {
 }
 
 // Helper to execute Cloud (Gemini) fallback
-async function executeCloud(action, text, sendResponse) {
+// MODIFIED TO ACCEPT targetLanguage
+async function executeCloud(action, text, targetLanguage, sendResponse) {
     try {
-        const result = await callExternalAIFallback(action, text);
+        const result = await callExternalAIFallback(action, text, targetLanguage);
         sendResponse({ success: true, result: `⚠️ FALLBACK USED (Gemini):\n\n${result}` });
         return true;
     } catch (err) {
@@ -99,8 +101,9 @@ async function executeCloud(action, text, sendResponse) {
     }
 }
 
-// Core Gemini API call function (This remains the same)
-async function callExternalAIFallback(action, text) {
+// Core Gemini API call function 
+// MODIFIED TO ACCEPT targetLanguage
+async function callExternalAIFallback(action, text, targetLanguage) {
   let systemInstruction = "";
   
   switch (action) {
@@ -108,7 +111,8 @@ async function callExternalAIFallback(action, text) {
       systemInstruction = "You are an expert research assistant. Summarize the following text briefly and concisely. Focus on the main argument and key findings.";
       break;
     case "translate":
-      systemInstruction = "You are an expert translator. Translate the following text into Spanish. Return only the translated text.";
+      // USE TARGET LANGUAGE IN PROMPT
+      systemInstruction = `You are an expert translator. Translate the following text into ${targetLanguage}. Return only the translated text.`;
       break;
     case "proofread":
       systemInstruction = "You are an expert editor and proofreader. Proofread and correct any grammatical or spelling errors in the following text, and improve clarity and academic tone. Return only the final, corrected text.";
@@ -154,7 +158,7 @@ async function callExternalAIFallback(action, text) {
   return result.trim();
 }
 
-// Message Listener (This remains the same)
+// Message Listener 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   (async () => {
     if (!msg || !msg.action) {
@@ -164,19 +168,20 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
     const action = msg.action;
     const text = msg.text || "";
+    const targetLanguage = msg.targetLanguage; // EXTRACT TARGET LANGUAGE
     const aiMode = await getAiMode();
 
     if (aiMode === 'builtin') {
         // Mode 1: Built-in Only
-        await executeBuiltIn(action, text, sendResponse);
+        await executeBuiltIn(action, text, targetLanguage, sendResponse);
         
     } else if (aiMode === 'cloud') {
         // Mode 2: Cloud Only (Gemini)
-        await executeCloud(action, text, sendResponse);
+        await executeCloud(action, text, targetLanguage, sendResponse);
 
     } else { // aiMode === 'hybrid' or default
         // Mode 3: Hybrid (Built-in -> Cloud Fallback)
-        const builtInSuccess = await executeBuiltIn(action, text, (response) => {
+        const builtInSuccess = await executeBuiltIn(action, text, targetLanguage, (response) => {
             if (response.success) {
                 sendResponse(response);
             } else {
@@ -185,7 +190,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         });
 
         if (!builtInSuccess) {
-            await executeCloud(action, text, sendResponse);
+            await executeCloud(action, text, targetLanguage, sendResponse);
         }
     }
   })();
