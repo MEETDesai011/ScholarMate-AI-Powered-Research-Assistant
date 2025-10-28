@@ -48,4 +48,4 @@ Since this extension is not yet on the Chrome Web Store, you can load it locally
 
 ## 📄 License
 
-This project is intended to be licensed under the MIT License. (As noted in `ToDo_List.md`, you should add a `LICENSE` file to the repository).
+This project is intended to be licensed under the MIT License.
