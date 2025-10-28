@@ -1,6 +1,6 @@
 # ScholarMate - AI Research Assistant
 
-![Extension Icon](ScholarMate%20–%20AI-Powered%20Research%20Assistant/icons/icon128.png)
+![Extension Icon](ScholarMate%20–%20AI-Powered%20Research%20Assistant/icons/icon48.png)
 
 **Tagline:** “Summarize. Translate. Perfect — Smarter Research, Faster.”
 
