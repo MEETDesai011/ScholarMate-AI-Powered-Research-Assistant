@@ -1,7 +1,6 @@
 # ScholarMate - AI Research Assistant
 
-![Extension Icon](./icons/icon128.png)
-
+![Extension Icon](.ScholarMate – AI-Powered Research Assistant/icons/icon128.png)
 **Tagline:** “Summarize. Translate. Perfect — Smarter Research, Faster.”
 
 ScholarMate is a Chrome extension designed to accelerate research and writing by integrating powerful AI tools directly into the browser. It allows users to summarize, translate, and proofread any selected text with a single click.
