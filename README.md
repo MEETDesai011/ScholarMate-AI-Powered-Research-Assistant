@@ -32,6 +32,7 @@ Since this extension is not yet on the Chrome Web Store, you can load it locally
 4.  **Load Unpacked:** Click the "Load unpacked" button.
 5.  **Select Folder:** Select the entire `ScholarMate – AI-Powered Research Assistant` folder (the one containing `manifest.json`).
 6.  **Done!** The "ScholarMate" icon should now appear in your Chrome toolbar.
+7. In Case of Error Restart your Device once and open the browser again. 
 
 ---
 
